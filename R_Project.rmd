@@ -1,0 +1,100 @@
+---
+title: "RProject"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+install.packages(XLConnect)
+library(XLConnect)
+library(dplyr)
+
+#read header also..take that column in consideration
+xls.df <- readWorksheetFromFile("C:/Users/Dell/Google Drive/study/R/Project/phidu_data_lga_sa.xls"
+                                 , sheet = "Education"
+                                 , startRow = 5
+                                 , endRow = 77
+                                 , startCol = 1
+                                 , endCol = 10)
+#View(xls.df)
+
+xls.df2 <- readWorksheetFromFile("C:/Users/Dell/Google Drive/study/R/Project/phidu_data_lga_sa.xls"
+                                 , sheet = "Indigenous_status"
+                                 , startRow = 5
+                                 , endRow = 77
+                                 , startCol = 1
+                                 , endCol = 5)
+#View(xls.df2)
+
+
+xls.df3 <- readWorksheetFromFile("C:/Users/Dell/Google Drive/study/R/Project/phidu_data_lga_sa.xls"
+                                , sheet = "Early_childhood_development"
+                                , region = "A5:BI77")
+
+View(xls.df3)
+
+xls.df3 <- xls.df3 %>%
+  dplyr:: select(Code,Name,Children.developmentally.vulnerable.in.communication.domain,Children.assessed.in.AEDC..first.year.of.school..14,X..Children.developmentally.vulnerable.in.communication.domain)
+
+str(xls.df3)
+xls.df.1stjoin<- inner_join(xls.df,xls.df2)
+
+
+xls.df.final<-inner_join(xls.df.1stjoin,xls.df3, by = c("Code", "Name"))
+
+View(xls.df.final)
+
+
+
+
+#xls.df.4 <- merge(xls.df,xls.df2, by = c("Code", "Name"))
+
+
+#xls.df.final <- merge(x = xls.df.4, y= xls.df3)
+
+ncol(xls.df.final)
+
+xls.df.final <- xls.df.final %>% mutate(Full.time.participation.at.age.16 = as.integer(Full.time.participation.at.age.16)
+                                        , People.aged.16 = as.integer(People.aged.16)
+                                        , X..full.time.participation.at.age.16 = as.numeric(X..full.time.participation.at.age.16)
+                                        , Number = as.integer(gsub(",","",Number))
+                                        , ASR.per.100 = as.numeric(ASR.per.100)
+                                        , SR = as.integer(SR)
+                                        , Aboriginal.people = as.integer(Aboriginal.people)
+                                        , Total.population = as.integer(Total.population)
+                                        , Aboriginal.population.as.proportion.of.total.population.... = as.numeric(Aboriginal.population.as.proportion.of.total.population....)
+                                        , Children.developmentally.vulnerable.in.communication.domain = as.integer(Children.developmentally.vulnerable.in.communication.domain)
+                                        , Children.assessed.in.AEDC..first.year.of.school. = as.integer(Children.assessed.in.AEDC..first.year.of.school..14)
+                                        , X..Children.developmentally.vulnerable.in.communication.domain = as.numeric(X..Children.developmentally.vulnerable.in.communication.domain))
+
+
+View(xls.df.final)
+
+
+
+write.csv(file= "phiduFinal.csv", x= xls.df.final)
+
+
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
